@@ -1,0 +1,185 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// Define the structure for a Task
+typedef struct {
+    int id;
+    char description[100];
+    int priority; // 1 = High, 2 = Medium, 3 = Low
+    char dueDate[11]; // Format: "YYYY-MM-DD"
+    bool completed;
+} Task;
+
+// Define the maximum number of tasks
+#define MAX_TASKS 100
+
+// Array of tasks
+Task tasks[MAX_TASKS];
+int taskCount = 0;
+
+// Function declarations
+void addTask();
+void editTask();
+void deleteTask();
+void listTasks();
+void markTaskAsCompleted();
+int findTaskById(int id);
+
+int main() {
+    int choice;
+
+    while (1) {
+        printf("\nTo-Do List Application\n");
+        printf("1. Add Task\n");
+        printf("2. Edit Task\n");
+        printf("3. Delete Task\n");
+        printf("4. List Tasks\n");
+        printf("5. Mark Task as Completed\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addTask();
+                break;
+            case 2:
+                editTask();
+                break;
+            case 3:
+                deleteTask();
+                break;
+            case 4:
+                listTasks();
+                break;
+            case 5:
+                markTaskAsCompleted();
+                break;
+            case 6:
+                exit(0);
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+
+    return 0;
+}
+
+// Function to add a task
+void addTask() {
+    if (taskCount >= MAX_TASKS) {
+        printf("Task list is full!\n");
+        return;
+    }
+
+    Task newTask;
+    newTask.id = taskCount + 1;
+    printf("Enter task description: ");
+    getchar(); // to consume the newline character
+    fgets(newTask.description, sizeof(newTask.description), stdin);
+    newTask.description[strcspn(newTask.description, "\n")] = '\0'; // Remove newline character
+
+    printf("Enter task priority (1 = High, 2 = Medium, 3 = Low): ");
+    scanf("%d", &newTask.priority);
+
+    printf("Enter due date (YYYY-MM-DD): ");
+    scanf("%s", newTask.dueDate);
+
+    newTask.completed = false;
+
+    tasks[taskCount] = newTask;
+    taskCount++;
+
+    printf("Task added successfully!\n");
+}
+
+// Function to edit a task
+void editTask() {
+    int id;
+    printf("Enter task ID to edit: ");
+    scanf("%d", &id);
+
+    int index = findTaskById(id);
+    if (index == -1) {
+        printf("Task not found!\n");
+        return;
+    }
+
+    Task *task = &tasks[index];
+
+    printf("Enter new task description (current: %s): ", task->description);
+    getchar(); // to consume the newline character
+    fgets(task->description, sizeof(task->description), stdin);
+    task->description[strcspn(task->description, "\n")] = '\0'; // Remove newline character
+
+    printf("Enter new task priority (1 = High, 2 = Medium, 3 = Low) (current: %d): ", task->priority);
+    scanf("%d", &task->priority);
+
+    printf("Enter new due date (YYYY-MM-DD) (current: %s): ", task->dueDate);
+    scanf("%s", task->dueDate);
+
+    printf("Task updated successfully!\n");
+}
+
+// Function to delete a task
+void deleteTask() {
+    int id;
+    printf("Enter task ID to delete: ");
+    scanf("%d", &id);
+
+    int index = findTaskById(id);
+    if (index == -1) {
+        printf("Task not found!\n");
+        return;
+    }
+
+    for (int i = index; i < taskCount - 1; i++) {
+        tasks[i] = tasks[i + 1];
+    }
+    taskCount--;
+
+    printf("Task deleted successfully!\n");
+}
+
+// Function to list all tasks
+void listTasks() {
+    if (taskCount == 0) {
+        printf("No tasks available.\n");
+        return;
+    }
+
+    printf("ID\tDescription\t\tPriority\tDue Date\tCompleted\n");
+    printf("---------------------------------------------------------------\n");
+    for (int i = 0; i < taskCount; i++) {
+        Task task = tasks[i];
+        printf("%d\t%s\t\t%d\t\t%s\t%s\n", task.id, task.description, task.priority, task.dueDate, task.completed ? "Yes" : "No");
+    }
+}
+
+// Function to mark a task as completed
+void markTaskAsCompleted() {
+    int id;
+    printf("Enter task ID to mark as completed: ");
+    scanf("%d", &id);
+
+    int index = findTaskById(id);
+    if (index == -1) {
+        printf("Task not found!\n");
+        return;
+    }
+
+    tasks[index].completed = true;
+    printf("Task marked as completed!\n");
+}
+
+// Function to find a task by ID
+int findTaskById(int id) {
+    for (int i = 0; i < taskCount; i++) {
+        if (tasks[i].id == id) {
+            return i;
+        }
+    }
+    return -1;
+}
