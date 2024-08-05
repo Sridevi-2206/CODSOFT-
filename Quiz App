@@ -1,0 +1,68 @@
+class Question:
+    def __init__(self, text, choices, correct_answer):
+        self.text = text
+        self.choices = choices
+        self.correct_answer = correct_answer
+
+    def is_correct(self, choice):
+        return choice == self.correct_answer
+
+class Quiz:
+    def __init__(self, questions):
+        self.questions = questions
+        self.score = 0
+
+    def start(self):
+        for i, question in enumerate(self.questions, start=1):
+            print(f"\nQuestion {i}: {question.text}")
+            for idx, choice in enumerate(question.choices, start=1):
+                print(f"{idx}. {choice}")
+            user_answer = int(input("Enter your answer: ")) - 1
+            if question.is_correct(user_answer):
+                print("Correct!")
+                self.score += 1
+            else:
+                print(f"Wrong! The correct answer was: {question.choices[question.correct_answer]}")
+
+        self.show_result()
+
+    def show_result(self):
+        print(f"\nYour final score is: {self.score}/{len(self.questions)}")
+        print(f"Percentage: {(self.score / len(self.questions)) * 100}%")
+
+def main():
+    # Sample data for quizzes
+    quizzes = [
+        Quiz([
+            Question("What is the capital of France?", ["Berlin", "London", "Paris", "Rome"], 2),
+            Question("What is 2 + 2?", ["3", "4", "5", "6"], 1),
+            Question("Which is the largest ocean?", ["Atlantic", "Indian", "Arctic", "Pacific"], 3)
+        ]),
+        Quiz([
+            Question("Which planet is known as the Red Planet?", ["Earth", "Mars", "Jupiter", "Venus"], 1),
+            Question("Who wrote 'To Kill a Mockingbird'?", ["Harper Lee", "Mark Twain", "J.K. Rowling", "Ernest Hemingway"], 0),
+            Question("What is the square root of 64?", ["6", "7", "8", "9"], 2)
+        ])
+    ]
+
+    while True:
+        print("\nQuiz App")
+        print("1. Start Quiz 1")
+        print("2. Start Quiz 2")
+        print("3. Exit")
+        choice = int(input("Enter your choice: "))
+
+        if choice == 1:
+            quizzes[0].start()
+        elif choice == 2:
+            quizzes[1].start()
+        elif choice == 3:
+            print("Exiting Quiz App.")
+            break
+        else:
+            print("Invalid choice! Please try again.")
+
+if __name__ == "__main__":
+    main()
+
+   
