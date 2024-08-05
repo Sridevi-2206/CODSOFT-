@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
+#include <string.h>
+
+// Function prototypes
+void set_alarm(int *alarm_hour, int *alarm_minute);
+void check_alarm(int alarm_hour, int alarm_minute);
+
+int main() {
+    int alarm_hour = -1, alarm_minute = -1;
+    char command[10];
+
+    printf("Welcome to the Alarm App\n");
+
+    while (1) {
+        printf("\nCommands:\n");
+        printf("1. Set alarm (set)\n");
+        printf("2. Check alarm (check)\n");
+        printf("3. Exit (exit)\n");
+        printf("Enter command: ");
+        scanf("%s", command);
+
+        if (strcmp(command, "set") == 0) {
+            set_alarm(&alarm_hour, &alarm_minute);
+        } else if (strcmp(command, "check") == 0) {
+            check_alarm(alarm_hour, alarm_minute);
+        } else if (strcmp(command, "exit") == 0) {
+            printf("Exiting...\n");
+            break;
+        } else {
+            printf("Unknown command.\n");
+        }
+    }
+
+    return 0;
+}
+
+void set_alarm(int *alarm_hour, int *alarm_minute) {
+    printf("Enter alarm hour (0-23): ");
+    scanf("%d", alarm_hour);
+    printf("Enter alarm minute (0-59): ");
+    scanf("%d", alarm_minute);
+
+    if (*alarm_hour < 0 || *alarm_hour > 23 || *alarm_minute < 0 || *alarm_minute > 59) {
+        printf("Invalid time. Please enter a valid time.\n");
+        *alarm_hour = -1;
+        *alarm_minute = -1;
+        return;
+    }
+
+    printf("Alarm set for %02d:%02d\n", *alarm_hour, *alarm_minute);
+}
+
+void check_alarm(int alarm_hour, int alarm_minute) {
+    if (alarm_hour == -1 || alarm_minute == -1) {
+        printf("No alarm is set.\n");
+        return;
+    }
+
+    while (1) {
+        time_t now;
+        struct tm *tm_info;
+
+        time(&now);
+        tm_info = localtime(&now);
+
+        if (tm_info->tm_hour == alarm_hour && tm_info->tm_min == alarm_minute) {
+            printf("\n** ALARM ** It's %02d:%02d\n", alarm_hour, alarm_minute);
+            break;
+        }
+
+        sleep(30);  // Check every 30 seconds
+    }
+}
